@@ -5,3 +5,8 @@ class Store(models.Model):
     name        = models.CharField(max_length=100)
     phone       = models.PhoneNumberField(null=False, blank=False, unique=True)
 
+    class Meta:
+        db_table = 'stores'
+
+    def __str__(self):
+        return "store address: " + address + "store phone number: " + phone
