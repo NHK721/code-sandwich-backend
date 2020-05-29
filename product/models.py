@@ -8,7 +8,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     name     = models.CharField(max_length=50)
-    category = models.ForeignKey(Category, on_delete = models.SET_NULL, null = True)
+    category = models.ForeignKey(Category, on_delete = CASCADE)
 
     class Meta:
         db_table = 'sub_categories'
@@ -16,9 +16,9 @@ class SubCategory(models.Model):
 class Product(models.Model):
     name               = models.CharField(max_length=50)
     name_en            = models.CharField(max_length=50)
-    image_url          = models.CharField(max_length=2000)
+    image_url          = models.UrlField(max_length=2000, null = True)
     description        = models.TextField(null=True)
-    default_price      = models.IntegerField(null = True)
+    default_price      = models.DecimalField(max_digits=10, decimal_places=2,null = True)
     toasted            = models.BooleanField(null=True)
     customization_true = models.BooleanField(null=True)
     nutrition          = models.OneToOneField('Nutrition', on_delete = models.SET_NULL, null=True)
@@ -51,8 +51,8 @@ class IngredientCategory(models.Model):
 
 class Ingredient(models.Model):
     name                        = models.CharField(max_length=50)
-    image_url                   = models.CharField(max_length=2000)
-    price                       = models.IntegerField(null = True)
+    image_url                   = models.UrlField(max_length=2000)
+    price                       = models.DecimalField(max_digits=10, decimal_places=2,null = True)
     ingredient_category         = models.ForeignKey(IngredientCategory, on_delete = models.SET_NULL, null = True)
     ingredient_placeoforigin    = models.ManyToManyField('PlaceOfOrigin', through='IngredientPlaceOfOrigin')
     ingredient_allergen         = models.ManyToManyField('Allergen', through='IngredientAllergen')
@@ -64,9 +64,9 @@ class Ingredient(models.Model):
         return self.name
 
 class ProductIngredient(models.Model):
-    default       = models.BooleanField(null=True)
-    product       = models.ForeignKey(Product, on_delete = models.SET_NULL, null=True)
-    ingredient    = models.ForeignKey(Ingredient, on_delete = models.SET_NULL, null=True)   
+    is_default    = models.BooleanField(null=True)
+    product       = models.ForeignKey(Product, on_delete = models.CASCADE)
+    ingredient    = models.ForeignKey(Ingredient, on_delete = models.CASCADE)   
 
 
 class PlaceOfOrigin(models.Model):
@@ -76,8 +76,8 @@ class PlaceOfOrigin(models.Model):
         db_table = 'place_of_origins'
 
 class IngredientPlaceOfOrigin(models.Model):
-    ingredient          = models.ForeignKey(Ingredient, on_delete = models.SET_NULL, null=True)
-    place_of_origin     = models.ForeignKey(PlaceOfOrigin, on_delete = models.SET_NULL, null=True)
+    ingredient          = models.ForeignKey(Ingredient, on_delete = models.CASCADE)
+    place_of_origin     = models.ForeignKey(PlaceOfOrigin, on_delete = models.CASCADE)
 
     class Meta:
         db_table = 'ingredients_placeoforigins'
@@ -90,8 +90,8 @@ class Allergen(models.Model):
         db_table = 'allergens'
 
 class IngredientAllergen(models.Model):
-    ingredient  = models.ForeignKey(Ingredient, on_delete = models.SET_NULL, null=True)
-    allergen    = models.ForeignKey(Allergen, on_delete = models.SET_NULL, null=True)
+    ingredient  = models.ForeignKey(Ingredient, on_delete = models.CASCADE)
+    allergen    = models.ForeignKey(Allergen, on_delete = models.CASCADE)
 
     class Meta:
         db_table = 'ingredients_allergens'
