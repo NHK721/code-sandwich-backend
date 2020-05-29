@@ -1,8 +1,7 @@
 from django.db          import models
-from store.models       import *
+from store.models       import Store
 from account.models     import Customer
-from product            import models
-from order.models       import *
+from product.models     import Product, Ingredient
 
 class Order(models.Model):
     customer                    = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
