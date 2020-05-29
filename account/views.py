@@ -27,7 +27,7 @@ class SignUpView(View):
                 Customer.objects.create(
                         email = data['email'],
                         password = hashed_password,
-                        name = data['name'],
+                        username = data['username'],
                         phone = data['phone']
                 )
                 return JsonResponse({'message':'SUCCESS'}, status=200)
