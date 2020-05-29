@@ -1,7 +1,7 @@
 from django.db          import models
 from store.models       import *
 from account.models     import Customer
-from product            import models
+from product.models     import Product, Ingredient
 from order.models       import *
 
 class Order(models.Model):

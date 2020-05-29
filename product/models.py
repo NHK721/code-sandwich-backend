@@ -8,7 +8,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     name     = models.CharField(max_length=50)
-    category = models.ForeignKey(Category, on_delete = CASCADE)
+    category = models.ForeignKey(Category, on_delete = models.CASCADE)
 
     class Meta:
         db_table = 'sub_categories'
@@ -16,7 +16,7 @@ class SubCategory(models.Model):
 class Product(models.Model):
     name               = models.CharField(max_length=50)
     name_en            = models.CharField(max_length=50)
-    image_url          = models.UrlField(max_length=2000, null = True)
+    image_url          = models.URLField(max_length=2000, null = True)
     description        = models.TextField(null=True)
     default_price      = models.DecimalField(max_digits=10, decimal_places=2,null = True)
     toasted            = models.BooleanField(null=True)
@@ -51,7 +51,7 @@ class IngredientCategory(models.Model):
 
 class Ingredient(models.Model):
     name                        = models.CharField(max_length=50)
-    image_url                   = models.UrlField(max_length=2000)
+    image_url                   = models.URLField(max_length=2000, null = True)
     price                       = models.DecimalField(max_digits=10, decimal_places=2,null = True)
     ingredient_category         = models.ForeignKey(IngredientCategory, on_delete = models.SET_NULL, null = True)
     ingredient_placeoforigin    = models.ManyToManyField('PlaceOfOrigin', through='IngredientPlaceOfOrigin')
@@ -62,6 +62,7 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class ProductIngredient(models.Model):
     is_default    = models.BooleanField(null=True)
@@ -77,7 +78,7 @@ class PlaceOfOrigin(models.Model):
 
 class IngredientPlaceOfOrigin(models.Model):
     ingredient          = models.ForeignKey(Ingredient, on_delete = models.CASCADE)
-    place_of_origin     = models.ForeignKey(PlaceOfOrigin, on_delete = models.CASCADE)
+    place_of_origin     = models.ForeignKey(PlaceOfOrigin,  on_delete = models.CASCADE)
 
     class Meta:
         db_table = 'ingredients_placeoforigins'
