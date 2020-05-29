@@ -48,7 +48,7 @@ class SignInView(View):
             if Customer.objects.filter(email = data['email']).exists():
                 if bcrypt.checkpw(data['password'].encode('utf-8'), Customer.objects.get(email = data['email']).password.encode('utf-8')):
                     token = jwt.encode(
-                            {'email':data['email']}, 'SECRET_KEY', algorithm='HS256').decode('utf-8')
+                            {'email':data['email']}, 'SECRET', algorithm='HS256').decode('utf-8')
                     return JsonResponse({'token':token},status=200)
                 return JsonResponse({'message':'INVALID_USER'},status=401)
             return JsonResponse({'message':'INVALID_USER'},status=401)
