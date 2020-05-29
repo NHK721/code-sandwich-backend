@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 
 
 
-from .models import Account
+from .models import Customer
 
 
 class SignUpView(View):
@@ -22,9 +22,9 @@ class SignUpView(View):
             validate_email(data['email'])
             if len(data['password']) < 8:
                 return JsonResponse({'message': '8자리 이상 입력하세요'}, status=400)
-            if not Account.objects.filter(email = data['email']).exists():
+            if not Customer.objects.filter(email = data['email']).exists():
                 hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-                Account.objects.create(
+                Customer.objects.create(
                         email = data['email'],
                         password = hashed_password,
                         name = data['name'],
@@ -45,10 +45,10 @@ class SignInView(View):
         data = json.loads(request.body)
 
         try:
-            if Account.objects.filter(email = data['email']).exists():
-                if bcrypt.checkpw(data['password'].encode('utf-8'), Account.objects.get(email = data['email']).password.encode('utf-8')):
+            if Customer.objects.filter(email = data['email']).exists():
+                if bcrypt.checkpw(data['password'].encode('utf-8'), Customer.objects.get(email = data['email']).password.encode('utf-8')):
                     token = jwt.encode(
-                            {'email':data['email']}, 'SECRET_KEY', algorithm='HS256').decode('utf-8')
+                            {'email':data['email']}, SECRET_KEY, algorithm='HS256').decode('utf-8')
                     return JsonResponse({'token':token},status=200)
                 return JsonResponse({'message':'INVALID_USER'},status=401)
             return JsonResponse({'message':'INVALID_USER'},status=401)
