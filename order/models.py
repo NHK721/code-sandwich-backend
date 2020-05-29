@@ -1,7 +1,7 @@
 from django.db          import models
 from store.models       import *
 from account.models     import Customer
-#from product           import models
+from product           import models
 from order.models       import *
 
 class Order(models.Model):
@@ -26,7 +26,7 @@ class Cart(models.Model):
     order       = models.ForeignKey('Order', on_delete=models.SET_NULL, blank=True, null=True)
     price       = models.IntegerField(blank=True, null=True)
     amount      = models.IntegerField(blank=True, null=True)
-   # product     = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+    product     = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = 'carts'
@@ -42,7 +42,7 @@ class OrderStatus(models.Model):
 
 class CartIngredient(models.Model):
     cart        = models.ForeignKey('Cart', on_delete=models.SET_NULL, blank=True, null=True)
-   # ingredient  = models.ForeignKey(Ingredient, on_delete=models.SET_NULL, blank=True, null=True)
+    ingredient  = models.ForeignKey(Ingredient, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = 'cart_ingredient'
