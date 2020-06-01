@@ -16,8 +16,8 @@ from .models import (
 class ProductView(View):
     def get(self, request):
         product_id = request.GET.get('product_id', None)
-        product_data = Product.objects.filter(id=product_id).all().values()[0]
-        nutrition_data = Nutrition.objects.filter(id = product_id).all().values()[0]
+        product_data = Product.objects.filter(id=product_id).values()[0]
+        nutrition_data = Nutrition.objects.filter(id = product_id).values()[0]
         return JsonResponse({
             "product":product_data,
             "nutrition":nutrition_data,
@@ -39,7 +39,7 @@ class CustomizationView(View):
             for ingredient in default_ingredients.values():
                 lst.append(ingredient['ingredient_id'])
             for ingredient_id in lst:
-                lst2.append(Ingredient.objects.filter(id=ingredient_id).all().values()[0])
+                lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
             for bread in lst2:
                 if "bottom" in bread['name']:
                     lst2.append(lst2.pop(lst2.index(bread)))
@@ -57,7 +57,7 @@ class ToppingView(View):
         for ingredient in default_ingredients.values():
             lst.append(ingredient['ingredient_id'])
         for ingredient_id in lst:
-            lst2.append(Ingredient.objects.filter(id=ingredient_id).all().values()[0])
+            lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
         for i in lst2:
             if i["ingredient_category_id"] != 1:
                 topping_lst.append(i)
@@ -73,7 +73,7 @@ class BreadView(View):
         for ingredient in default_ingredients.values():
             lst.append(ingredient['ingredient_id'])
         for ingredient_id in lst:
-            lst2.append(Ingredient.objects.filter(id=ingredient_id).all().values()[0])
+            lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
         for i in lst2:
             if i["ingredient_category_id"] == 1:
                 bread_lst.append(i)
