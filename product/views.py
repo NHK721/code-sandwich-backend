@@ -33,7 +33,7 @@ class CustomizationView(View):
         product_id = request.GET.get('product_id', None)
         product_name = Product.objects.filter(id=product_id).values()[0]['name']
         if Product.objects.filter(id=product_id).values()[0]['customization_true'] == True:
-            default_ingredients = ProductIngredient.objects.filter(is_default=True).filter(product_id = product_id)
+            default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
             lst = []
             lst2 = []
             for ingredient in default_ingredients.values():
@@ -50,7 +50,7 @@ class CustomizationView(View):
 class ToppingView(View):
     def get(self, request):
         product_id = request.GET.get('product_id', None)
-        default_ingredients = ProductIngredient.objects.filter(is_default=True).filter(product_id = product_id)
+        default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
         lst = []
         lst2 = []
         topping_lst = []
@@ -66,7 +66,7 @@ class ToppingView(View):
 class BreadView(View):
     def get(self, request):
         product_id = request.GET.get('product_id', None)
-        default_ingredients = ProductIngredient.objects.filter(is_default=True).filter(product_id = product_id)
+        default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
         lst = []
         lst2 = []
         bread_lst = []
