@@ -12,7 +12,7 @@ class Order(models.Model):
     creditcard_expiraion_date   = models.CharField(max_length=4, null=True)
     creditcard_fullname         = models.CharField(max_length=100, null=True)
     order_date                  = models.DateTimeField(auto_now_add=True, null=True)
-    order_status_id             = models.ForeignKey('OrderStatus', on_delete=models.SET_NULL, blank=True, null=True)
+    order_status                = models.ForeignKey('OrderStatus', on_delete=models.SET_NULL, blank=True, null=True)
     total_price                 = models.IntegerField(blank=True, null=True)
 
     class Meta:

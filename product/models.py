@@ -67,7 +67,7 @@ class Ingredient(models.Model):
 class ProductIngredient(models.Model):
     is_default    = models.BooleanField(null=True)
     product       = models.ForeignKey(Product, on_delete = models.CASCADE)
-    ingredient    = models.ForeignKey(Ingredient, on_delete = models.CASCADE)   
+    ingredient    = models.ForeignKey(Ingredient, on_delete = models.CASCADE)
 
 
 class PlaceOfOrigin(models.Model):
