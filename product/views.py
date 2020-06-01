@@ -4,7 +4,14 @@ import ast
 from django.views               import View
 from django.http                import JsonResponse
 
-from .models import Product, Category, SubCategory, Nutrition, Ingredient, ProductIngredient
+from .models import (
+    Product, 
+    Category, 
+    SubCategory, 
+    Nutrition, 
+    Ingredient, 
+    ProductIngredient
+)
 
 class ProductView(View):
     def get(self, request):
@@ -13,7 +20,7 @@ class ProductView(View):
         nutrition_data = Nutrition.objects.filter(id = product_id).all().values()[0]
         return JsonResponse({
             "product":product_data,
-            "nutirion":nutrition_data,
+            "nutrition":nutrition_data,
         }, status=200)
 
 class SandwichView(View):
