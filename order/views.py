@@ -5,8 +5,21 @@ import jwt, bcrypt
 from django.views               import View
 from django.http                import JsonResponse
 
-from .models        import Order, Cart, CartIngredient, DestinationLocation, OrderStatus 
-from product.models import Product, Category, SubCategory, Nutrition, Ingredient, ProductIngredient
+from .models        import (
+    Order, 
+    Cart, 
+    CartIngredient, 
+    DestinationLocation, 
+    OrderStatus
+) 
+from product.models import (
+    Product, 
+    Category, 
+    SubCategory, 
+    Nutrition, 
+    Ingredient, 
+    ProductIngredient
+)
 from store.models   import Store
 from account.models import Customer
 
