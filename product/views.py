@@ -110,6 +110,7 @@ class BreadView(View):
         lst = []
         lst2 = []
         bread_lst = []
+        all_bread = list(Ingredient.objects.filter(ingredient_category_id = 1).values())
         for ingredient in default_ingredients.values():
             lst.append(ingredient['ingredient_id'])
         for ingredient_id in lst:
@@ -117,7 +118,7 @@ class BreadView(View):
         for i in lst2:
             if i["ingredient_category_id"] == 1:
                 bread_lst.append(i)
-        return JsonResponse({'default_bread': bread_lst})
+        return JsonResponse({'default_bread': bread_lst, 'all_bread': all_bread})
 
     def post(self, request, *args, **kwargs):
         body_unicode = request.body.decode('utf-8')
