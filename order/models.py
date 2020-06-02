@@ -18,9 +18,6 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
-    def __str__(self):
-        return "order_date: " + order_date + ", total_price: " + total_price
-
 class Cart(models.Model):
     order       = models.ForeignKey('Order', on_delete=models.SET_NULL, blank=True, null=True)
     price       = models.IntegerField(blank=True, null=True)
@@ -29,9 +26,6 @@ class Cart(models.Model):
 
     class Meta:
         db_table = 'carts'
-
-    def __str__(self):
-        return "product: " + product + ", amount: " + amount
 
 class OrderStatus(models.Model):
     name    = models.CharField(max_length=30, blank=True, null=True)
