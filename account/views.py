@@ -42,10 +42,8 @@ class SignUpView(View):
 class SignInView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        
         try:
             if Customer.objects.filter(email = data['email']).exists():
-                import pdb; pdb.set_trace()
                 if bcrypt.checkpw(data['password'].encode('utf-8'), Customer.objects.get(email = data['email']).password.encode('utf-8')):
                     token = jwt.encode({ 'email' : data['email'] }, SECRET_KEY, algorithm='HS256').decode('utf-8')
                     return JsonResponse({'token':token},status=200)

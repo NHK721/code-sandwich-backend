@@ -123,9 +123,7 @@ class CartView(View):
                 # this combines all the ingredients and saves in a variable
                 all_ingredients = default_ingredients + added_ingredients
                 # this creates a new cart for the cusomized cart
-                Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                # this extracts the cart that was just created
-                cart = Cart.objects.filter(order = order).all().last()
+                cart = Cart.objects.create(order = order, price = price, amount = 1, product = product)
                 # this creates CartIngredient relationships
                 for ingredient in all_ingredients:
                     CartIngredient.objects.create(cart = cart, ingredient_id = ingredient['id'])
