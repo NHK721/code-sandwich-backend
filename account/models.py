@@ -12,4 +12,4 @@ class Customer(models.Model):
         db_table = 'customers'
 
     def __str__(self):
-        return "username: " + username + ", phone: " + phone
+        return "email: " + email + ", phone: " + phone
