@@ -37,11 +37,11 @@ class ProductView(View):
         for sandwich in group_products:
             try:
                 if sandwich == product_info:
-                    show_products.append(group_products[group_products.index(i) + 1])
-                    show_products.append(group_products[group_products.index(i) - 1])
+                    show_products.append(group_products[group_products.index(sandwich) + 1])
+                    show_products.append(group_products[group_products.index(sandwich) - 1])
                     show_products.reverse()
             except IndexError:
-                show_products.append(group_products[group_products.index(i) - 1])
+                show_products.append(group_products[group_products.index(sandwich) - 1])
                 show_products.append(group_products[0])
         show_products = list(show_products)
 
