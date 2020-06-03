@@ -62,18 +62,18 @@ class CustomizationView(View):
         product_name = Product.objects.filter(id=product_id).values()[0]['name']
         if Product.objects.filter(id=product_id).values()[0]['customization_true'] == True:
             default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
-            lst = []
-            lst2 = []
+            ingredients = []
+            default_ingredients = []
             all_bread = [bread for bread in Ingredient.objects.filter(ingredient_category_id=1).values()]
             for ingredient in default_ingredients.values():
-                lst.append(ingredient['ingredient_id'])
-            for ingredient_id in lst:
-                lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
-            for bread in lst2:
+                ingredients.append(ingredient['ingredient_id'])
+            for ingredient_id in ingredients:
+                default_ingredients.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
+            for bread in default_ingredients:
                 if "bottom" in bread['name']:
-                    lst2.append(lst2.pop(lst2.index(bread)))
+                    default_ingredients.append(default_ingredients.pop(default_ingredients.index(bread)))
                     break
-            return JsonResponse({'default_ingredients':lst2, 'product_name':product_name, 'all_bread': all_bread})
+            return JsonResponse({'default_ingredients':default_ingredients, 'product_name':product_name, 'all_bread': all_bread})
         return JsonResponse({'message':"You can't customize this item"})
 
 class ToppingView(View):
@@ -91,16 +91,16 @@ class ToppingView(View):
         ingr5 = Ingredient.objects.filter(ingredient_category_id = 5).values()
         ingr5 = list(ingr5)
         all_toppings = ingr2 + ingr3 + ingr4 + ingr5
-        lst = []
-        lst2 = []
+        ingredient_ids = []
+        ingredients = []
         topping_lst = []
         chosen_topping = []
         for ingredient in default_ingredients.values():
-            lst.append(ingredient['ingredient_id'])
-        for ingredient_id in lst:
-            lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
-        for i in lst2:
-            if i["ingredient_category_id"] != 1:
+            ingredient_ids.append(ingredient['ingredient_id'])
+        for ingredient_id in ingredient_ids:
+            ingredients.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
+        for ingredient in ingredients:
+            if ingredient["ingredient_category_id"] != 1:
                 topping_lst.append(i)
         chosen_topping += topping_lst
         return JsonResponse({'default_toppings': topping_lst, 'all_toppings': all_toppings})
@@ -109,17 +109,17 @@ class BreadView(View):
     def get(self, request):
         product_id = request.GET.get('product_id', None)
         default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
-        lst = []
-        lst2 = []
+        ingredient_ids = []
+        breads = []
         bread_lst = []
         all_bread = list(Ingredient.objects.filter(ingredient_category_id = 1).values())
         for ingredient in default_ingredients.values():
-            lst.append(ingredient['ingredient_id'])
-        for ingredient_id in lst:
-            lst2.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
-        for i in lst2:
-            if i["ingredient_category_id"] == 1:
-                bread_lst.append(i)
+            ingredient_ids.append(ingredient['ingredient_id'])
+        for ingredient_id in ingredient_ids:
+            breads.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
+        for bread in breads:
+            if bread["ingredient_category_id"] == 1:
+                bread_lst.append(bread)
         return JsonResponse({'default_bread': bread_lst, 'all_bread': all_bread})
     
     def post(self, request):
