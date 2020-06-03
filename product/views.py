@@ -60,20 +60,22 @@ class CustomizationView(View):
     def get(self, request):
         product_id = request.GET.get('product_id', None)
         product_name = Product.objects.filter(id=product_id).values()[0]['name']
+        
         if Product.objects.filter(id=product_id).values()[0]['customization_true'] == True:
             default_ingredients = ProductIngredient.objects.filter(is_default=True, product_id = product_id)
             ingredients = []
-            default_ingredients = []
+            another_ingredients_list = []
             all_bread = [bread for bread in Ingredient.objects.filter(ingredient_category_id=1).values()]
             for ingredient in default_ingredients.values():
                 ingredients.append(ingredient['ingredient_id'])
             for ingredient_id in ingredients:
-                default_ingredients.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
-            for bread in default_ingredients:
+                another_ingredients_list.append(Ingredient.objects.filter(id=ingredient_id).values()[0])
+                
+            for bread in another_ingredients_list:
                 if "bottom" in bread['name']:
-                    default_ingredients.append(default_ingredients.pop(default_ingredients.index(bread)))
+                    another_ingredients_list.append(another_ingredients_list.pop(another_ingredients_list.index(bread)))
                     break
-            return JsonResponse({'default_ingredients':default_ingredients, 'product_name':product_name, 'all_bread': all_bread})
+            return JsonResponse({'default_ingredients':another_ingredients_list, 'product_name':product_name, 'all_bread': all_bread})
         return JsonResponse({'message':"You can't customize this item"})
 
 class ToppingView(View):
