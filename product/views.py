@@ -34,9 +34,9 @@ class ProductView(View):
         group_products = list(Product.objects.filter(subcategory = product_group, category = 1).values())
         show_products = []
 
-        for i in group_products:
+        for sandwich in group_products:
             try:
-                if i == product_info:
+                if sandwich == product_info:
                     show_products.append(group_products[group_products.index(i) + 1])
                     show_products.append(group_products[group_products.index(i) - 1])
                     show_products.reverse()
