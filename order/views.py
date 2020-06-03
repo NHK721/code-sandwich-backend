@@ -56,20 +56,20 @@ class CartView(View):
 
     @login_required
     def post(self, request, **kwargs):
-        user = kwargs['user']
+        user        = kwargs['user']
         customer_id = kwargs['customer_id']
         
         try:
             body = json.loads(request.body)
             try:
                 # below is when the customer's order is still active 
-                order = Order.objects.get(customer = user, order_status_id = 2)
+                order       = Order.objects.get(customer = user, order_status_id = 2)
                 # update the order by just adding carts
-                product_id = body['product']['id']
-                product = Product.objects.get(id = product_id)
+                product_id  = body['product']['id']
+                product     = Product.objects.get(id = product_id)
                 # this extracts the price
-                price = body['product']['default_price']
-                price = float(price)
+                price       = body['product']['default_price']
+                price       = float(price)
                 # this decides whether the same cart exists or not
                 for cart in order.cart_set.values():
                     if cart['product_id'] == body['product']['id']:
@@ -82,9 +82,9 @@ class CartView(View):
                         continue
                 ## make a new cart for default_item
                 Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                order.total_price += price
+                order.total_price   += price
                 order.save()
-                total_price = order.total_price
+                total_price         = order.total_price
                 return JsonResponse({"message": "ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
             
             # this is when there is no active order
@@ -92,13 +92,13 @@ class CartView(View):
                 # this creates a new order if the customer's one is non-active or non-existent
                 Order.objects.create(order_status_id=2, total_price = 0, customer=user)
                 # this extracts the order
-                order = Order.objects.get(customer = user, order_status_id = 2)
+                order       = Order.objects.get(customer = user, order_status_id = 2)
                 # update the order by just adding carts
-                product_id = body['product']['id']
-                product = Product.objects.get(id = product_id)
+                product_id  = body['product']['id']
+                product     = Product.objects.get(id = product_id)
                 #this extracts the price
-                price = body['product']['default_price']
-                price = float(price)
+                price       = body['product']['default_price']
+                price       = float(price)
                 ## make a new cart for default_item
                 Cart.objects.create(order = order, price = price, amount = 1, product = product)
                 order.total_price += price
@@ -110,18 +110,18 @@ class CartView(View):
             body = ast.literal_eval(request.body.decode('utf-8'))
             try:
                 # this is when there is an active order
-                order = Order.objects.get(customer = user, order_status_id = 2)
+                order               = Order.objects.get(customer = user, order_status_id = 2)
                 # this extracts the original product name
-                product_name = body['product_name']
+                product_name        = body['product_name']
                 # this extracts the price of the default product and the product itself
-                product = Product.objects.get(name = product_name)
-                price = product.default_price
-                price = float(price)
+                product             = Product.objects.get(name = product_name)
+                price               = product.default_price
+                price               = float(price)
                 # this extracts the default and the added ingredients
                 default_ingredients = body['default_ingredients']
-                added_ingredients = body['added_ingredients']
+                added_ingredients   = body['added_ingredients']
                 # this combines all the ingredients and saves in a variable
-                all_ingredients = default_ingredients + added_ingredients
+                all_ingredients     = default_ingredients + added_ingredients
                 # this creates a new cart for the cusomized cart
                 cart = Cart.objects.create(order = order, price = price, amount = 1, product = product)
                 # this creates CartIngredient relationships
@@ -131,28 +131,28 @@ class CartView(View):
                     if float(ingredient['price']) != 0:
                         price += float(ingredient['price'])
                 #this adds the price onto the order
-                cart.price += price
-                order.total_price += price
+                cart.price          += price
+                order.total_price   += price
                 order.save()
-                total_price = order.total_price
+                total_price         = order.total_price
                 return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
 
             # this is when there is no active order
             except Order.DoesNotExist:
                 # this creates a new order if the customer's one is non-active or non-existent
                 Order.objects.create(order_status_id=2, total_price = 0, customer=user)
-                order = Order.objects.get(customer = user, order_status_id = 2)
+                order           = Order.objects.get(customer = user, order_status_id = 2)
                 # this extracts the original product name
-                product_name = body['product_name']
+                product_name    = body['product_name']
                 # this extracts the price of the default product and the product itself
-                product = Product.objects.get(name = product_name)
-                price = product.default_price
-                price = float(price)
+                product         = Product.objects.get(name = product_name)
+                price           = product.default_price
+                price           = float(price)
                 # this extracts the default and the added ingredients
                 default_ingredients = body['default_ingredients']
-                added_ingredients = body['added_ingredients']
+                added_ingredients   = body['added_ingredients']
                 # this combines all the ingredients and saves in a variable
-                all_ingredients = default_ingredients + added_ingredients
+                all_ingredients     = default_ingredients + added_ingredients
                 # this creates a new cart for the cusomized cart
                 Cart.objects.create(order = order, price = price, amount = 1, product = product)
                 # this extracts the cart that was just created
@@ -176,10 +176,10 @@ class CartView(View):
         customer_id = kwargs['customer_id']
         try:
             # this calls the last order of the user
-            order = Order.objects.get(customer = user, order_status_id = 2)
-            order_dict = model_to_dict(order)
-            carts = order.cart_set.all()
-            cart_dicts = [ model_to_dict(i) for i in carts ]
+            order       = Order.objects.get(customer = user, order_status_id = 2)
+            order_dict  = model_to_dict(order)
+            carts       = order.cart_set.all()
+            cart_dicts  = [ model_to_dict(i) for i in carts ]
             # this sends the JSON response to the frontend
             return JsonResponse({'order': order_dict, 'carts': cart_dicts})
         except Order.DoesNotExist:
@@ -192,7 +192,7 @@ class CartView(View):
         customer_id = kwargs['customer_id']
         try:
             # this calls the last order of the user
-            order = Order.objects.get(customer = user, order_status_id = 2)
+            order       = Order.objects.get(customer = user, order_status_id = 2)
             cart_number = body['cart_number']
             Cart.objects.get(id=cart_number).delete()
             return JsonResponse({'message': 'ITEM DELETED'})
@@ -203,8 +203,8 @@ class OrderView(View):
     
     @login_required
     def post(self, request, *args, **kwargs):
-        body = ast.literal_eval(request.body.decode('utf-8'))
-        user = kwargs['user']
+        body        = ast.literal_eval(request.body.decode('utf-8'))
+        user        = kwargs['user']
         customer_id = kwargs['customer_id']
         try:
             # calls the order in question
