@@ -3,10 +3,12 @@ import ast
 import jwt
 import bcrypt
 
-from django.views               import View
-from django.http                import JsonResponse
-from django.forms.models        import model_to_dict
-from django.core.exceptions     import ObjectDoesNotExist
+from django.views                   import View
+from django.http                    import JsonResponse
+from django.forms.models            import model_to_dict
+from django.core.exceptions         import ObjectDoesNotExist
+from django.core.serializers        import serialize
+from django.core.serializers.json   import DjangoJSONEncoder
 
 from .models        import (
     Order, 
@@ -58,7 +60,6 @@ class CartView(View):
     def post(self, request, *args, **kwargs):
         user        = kwargs['user']
         customer_id = kwargs['customer_id']
-        
         body = json.loads(request.body)
         # this is when there is no active order
         if not Order.objects.filter(customer = user, order_status_id = 2).exists():        
@@ -107,7 +108,8 @@ class CartView(View):
             order.total_price   += price
             order.save()
             total_price         = order.total_price
-            return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values()), "cart_ingredients": list(CartIngredient.objects.filter(cart=cart).values())})
+            CartIngredient.objects.filter(cart=cart).values()
+            return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values()), "cart_ingredients": list(CartIngredient.objects.filter(cart=cart).values()), 'all_ingredients': all_ingredients})
 
     @login_required
     def get(self, request, *args, **kwargs):
@@ -115,12 +117,15 @@ class CartView(View):
         customer_id = kwargs['customer_id']
         try:
             # this calls the last order of the user
-            order       = Order.objects.get(customer = user, order_status_id = 2)
-            order_dict  = model_to_dict(order)
-            carts       = order.cart_set.all()
-            cart_dicts  = [ model_to_dict(i) for i in carts ]
+            order                       = Order.objects.get(customer = user, order_status_id = 2)
+            order_dict                  = model_to_dict(order)
+            carts                       = order.cart_set.all()
+            cart_dicts                  = [ model_to_dict(cart) for cart in carts ]
+            cart_ingredients            = [cart.cartingredient_set.all() for cart in carts]
+            ingredients = [{'cart_id': cart.id, 'ingredient':[{'name':b.ingredient.name} for b in cart.cartingredient_set.all()]} for cart in order.cart_set.all()]
+            
             # this sends the JSON response to the frontend
-            return JsonResponse({'order': order_dict, 'carts': cart_dicts})
+            return JsonResponse({'order': order_dict, 'carts': cart_dicts, 'ingredients': ingredients})
         except Order.DoesNotExist:
             return JsonResponse({'message': 'THERE IS NO ACTIVE ORDER'})
 
