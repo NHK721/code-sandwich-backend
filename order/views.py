@@ -55,119 +55,60 @@ def login_required(func):
 class CartView(View):
 
     @login_required
-    def post(self, request, **kwargs):
+    def post(self, request, *args, **kwargs):
         user        = kwargs['user']
         customer_id = kwargs['customer_id']
         
-        try:
-            body = json.loads(request.body)
-            if Order.objects.get(customer = user, order_status_id = 2):
-                # below is when the customer's order is still active 
-                order       = Order.objects.get(customer = user, order_status_id = 2)
-                # update the order by just adding carts
-                product_id  = body['product']['id']
-                product     = Product.objects.get(id = product_id)
-                # this extracts the price
-                price       = body['product']['default_price']
-                price       = float(price)
-                # this decides whether the same cart exists or not
-                for cart in order.cart_set.values():
-                    if cart['product_id'] == body['product']['id']:
-                        a = Cart.objects.get(order = order, product_id = cart['product_id'])
-                        a.amount += 1
-                        a.save()
-                        return JsonResponse({'message': 'ITEM AMOUNT INCREASED'})
-                        break
-                    else:
-                        continue
-                ## make a new cart for default_item
-                Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                order.total_price   += price
-                order.save()
-                total_price         = order.total_price
-                return JsonResponse({"message": "ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
-            
-            # this is when there is no active order
-            elif not Order.objects.get(customer = user, order_status_id = 2).exists():
-            #except Order.DoesNotExist:        
-                # this creates a new order if the customer's one is non-active or non-existent
-                order = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
-                # update the order by just adding carts
-                product_id  = body['product']['id']
-                product     = Product.objects.get(id = product_id)
-                #this extracts the price
-                price       = body['product']['default_price']
-                price       = float(price)
-                ## make a new cart for default_item
-                Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                order.total_price += price
-                order.save()
-                total_price = order.total_price
-                return JsonResponse({"message": "MADE A NEW ORDER AND ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
+        body = json.loads(request.body)
+        # this is when there is no active order
+        if not Order.objects.filter(customer = user, order_status_id = 2).exists():        
+            # this creates a new order if the customer's one is non-active or non-existent
+            order       = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
+        elif Order.objects.get(customer = user, order_status_id = 2):
+            # below is when the customer's order is still active 
+            order       = Order.objects.get(customer = user, order_status_id = 2)
+            # update the order by just adding carts
+        # this checks whether it's original or customized
+        if 'product' in body.keys():
+            product_id  = body['product']['id']
+            product     = Product.objects.get(id = product_id)
+            #this extracts the price
+            price       = body['product']['default_price']
+            price       = float(price)
+            ## make a new cart for an original sandwich
+            Cart.objects.create(order = order, price = price, amount = 1, product = product)
+            order.total_price += price
+            order.save()
+            total_price = order.total_price
+            return JsonResponse({"message": "ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
+        
+        elif body['default_ingredients']:
+            # this extracts the original product name
+            product_name        = body['product_name']
+            # this extracts the price of the default product and the product itself
+            product             = Product.objects.get(name = product_name)
+            price               = product.default_price
+            price               = float(price)
+            # this extracts the default and the added ingredients
+            default_ingredients = body['default_ingredients']
+            added_ingredients   = body['added_ingredients']
+            # this combines all the ingredients and saves in a variable
+            all_ingredients     = default_ingredients + added_ingredients
+            # this creates a new cart for the cusomized cart
+            cart = Cart.objects.create(order = order, price = price, amount = 1, product = product)
+            # this creates CartIngredient relationships
+            for ingredient in all_ingredients:
+                CartIngredient.objects.create(cart = cart, ingredient_id = ingredient['id'])
+            for ingredient in added_ingredients:
+                if float(ingredient['price']) != 0:
+                    price += float(ingredient['price'])
+            #this adds the price onto the order
+            cart.price          += price
+            order.total_price   += price
+            order.save()
+            total_price         = order.total_price
+            return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values()), "cart_ingredients": list(CartIngredient.objects.filter(cart=cart).values())})
 
-        except ValueError:
-            body = ast.literal_eval(request.body.decode('utf-8'))
-            if Order.objects.get(customer = user, order_status_id = 2):
-                # this is when there is an active order
-                order               = Order.objects.get(customer = user, order_status_id = 2)
-                # this extracts the original product name
-                product_name        = body['product_name']
-                # this extracts the price of the default product and the product itself
-                product             = Product.objects.get(name = product_name)
-                price               = product.default_price
-                price               = float(price)
-                # this extracts the default and the added ingredients
-                default_ingredients = body['default_ingredients']
-                added_ingredients   = body['added_ingredients']
-                # this combines all the ingredients and saves in a variable
-                all_ingredients     = default_ingredients + added_ingredients
-                # this creates a new cart for the cusomized cart
-                cart = Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                # this creates CartIngredient relationships
-                for ingredient in all_ingredients:
-                    CartIngredient.objects.create(cart = cart, ingredient_id = ingredient['id'])
-                for ingredient in added_ingredients:
-                    if float(ingredient['price']) != 0:
-                        price += float(ingredient['price'])
-                #this adds the price onto the order
-                cart.price          += price
-                order.total_price   += price
-                order.save()
-                total_price         = order.total_price
-                return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
-
-            # this is when there is no active order
-            elif not Order.objects.get(customer = user, order_status_id = 2).exists():
-                # this creates a new order if the customer's one is non-active or non-existent
-                order           = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
-                # this extracts the original product name
-                product_name    = body['product_name']
-                # this extracts the price of the default product and the product itself
-                product         = Product.objects.get(name = product_name)
-                price           = product.default_price
-                price           = float(price)
-                # this extracts the default and the added ingredients
-                default_ingredients = body['default_ingredients']
-                added_ingredients   = body['added_ingredients']
-                # this combines all the ingredients and saves in a variable
-                all_ingredients     = default_ingredients + added_ingredients
-                # this creates a new cart for the cusomized cart
-                Cart.objects.create(order = order, price = price, amount = 1, product = product)
-                # this extracts the cart that was just created
-                cart = Cart.objects.filter(order = order).all().last()
-                # this creates CartIngredient relationships
-                for ingredient in all_ingredients:
-                    CartIngredient.objects.create(cart = cart, ingredient_id = ingredient['id'])
-                for ingredient in added_ingredients:
-                    if float(ingredient['price']) != 0:
-                        price += float(ingredient['price'])
-                #this adds the price onto the order
-                cart.price += price
-                order.total_price += price
-                order.save()
-                total_price = order.total_price
-                return JsonResponse({"message": "MADE A NEW ORDER AND CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
-    
     @login_required
     def get(self, request, *args, **kwargs):
         user = kwargs['user']
