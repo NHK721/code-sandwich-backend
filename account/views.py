@@ -17,7 +17,7 @@ from .models import Customer
 class SignUpView(View):
     def post(self, request):
         data = json.loads(request.body)
-        
+
         try:
             validate_email(data['email'])
             if len(data['password']) < 6:

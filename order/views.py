@@ -113,7 +113,7 @@ class CartView(View):
 
     @login_required
     def get(self, request, *args, **kwargs):
-        user = kwargs['user']
+        user        = kwargs['user']
         customer_id = kwargs['customer_id']
         try:
             # this calls the last order of the user
@@ -131,8 +131,8 @@ class CartView(View):
 
     @login_required
     def delete(self, request, *args, **kwargs):
-        body = ast.literal_eval(request.body.decode('utf-8'))
-        user = kwargs['user']
+        body        = json.loads(request.body)
+        user        = kwargs['user']
         customer_id = kwargs['customer_id']
         try:
             # this calls the last order of the user
@@ -147,7 +147,7 @@ class OrderView(View):
     
     @login_required
     def post(self, request, *args, **kwargs):
-        body        = ast.literal_eval(request.body.decode('utf-8'))
+        body        = json.loads(request.body)
         user        = kwargs['user']
         customer_id = kwargs['customer_id']
         try:
