@@ -61,7 +61,7 @@ class CartView(View):
         
         try:
             body = json.loads(request.body)
-            try:
+            if Order.objects.get(customer = user, order_status_id = 2):
                 # below is when the customer's order is still active 
                 order       = Order.objects.get(customer = user, order_status_id = 2)
                 # update the order by just adding carts
@@ -88,11 +88,10 @@ class CartView(View):
                 return JsonResponse({"message": "ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
             
             # this is when there is no active order
-            except Order.DoesNotExist:        
+            elif not Order.objects.get(customer = user, order_status_id = 2).exists():
+            #except Order.DoesNotExist:        
                 # this creates a new order if the customer's one is non-active or non-existent
-                Order.objects.create(order_status_id=2, total_price = 0, customer=user)
-                # this extracts the order
-                order       = Order.objects.get(customer = user, order_status_id = 2)
+                order = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
                 # update the order by just adding carts
                 product_id  = body['product']['id']
                 product     = Product.objects.get(id = product_id)
@@ -108,7 +107,7 @@ class CartView(View):
 
         except ValueError:
             body = ast.literal_eval(request.body.decode('utf-8'))
-            try:
+            if Order.objects.get(customer = user, order_status_id = 2):
                 # this is when there is an active order
                 order               = Order.objects.get(customer = user, order_status_id = 2)
                 # this extracts the original product name
@@ -138,10 +137,9 @@ class CartView(View):
                 return JsonResponse({"message": "CUSTOMIZED SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
 
             # this is when there is no active order
-            except Order.DoesNotExist:
+            elif not Order.objects.get(customer = user, order_status_id = 2).exists():
                 # this creates a new order if the customer's one is non-active or non-existent
-                Order.objects.create(order_status_id=2, total_price = 0, customer=user)
-                order           = Order.objects.get(customer = user, order_status_id = 2)
+                order           = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
                 # this extracts the original product name
                 product_name    = body['product_name']
                 # this extracts the price of the default product and the product itself
