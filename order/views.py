@@ -18,11 +18,11 @@ from .models        import (
     OrderStatus
 ) 
 from product.models import (
-    Product, 
-    Category, 
-    SubCategory, 
-    Nutrition, 
-    Ingredient, 
+    Product,
+    Category,
+    SubCategory,
+    Nutrition,
+    Ingredient,
     ProductIngredient
 )
 from store.models           import Store
@@ -33,14 +33,14 @@ global order
 
 def login_required(func):
         def wrapper(self, request, *args, **kwargs):
-            
+
             header_token            = request.META.get('HTTP_AUTHORIZATION')
             decoded_token           = jwt.decode(header_token, SECRET_KEY, algorithm='HS256')['email']
             user                    = Customer.objects.get(email=decoded_token)
             customer_id             = user.id
             kwargs['user']          = user
             kwargs['customer_id']   = customer_id
-            
+
             try:
                 if Customer.objects.filter(email=decoded_token).exists():
                     return func(self, request, *args, **kwargs)
@@ -62,7 +62,7 @@ class CartView(View):
         customer_id = kwargs['customer_id']
         body = json.loads(request.body)
         # this is when there is no active order
-        if not Order.objects.filter(customer = user, order_status_id = 2).exists():        
+        if not Order.objects.filter(customer = user, order_status_id = 2).exists():
             # this creates a new order if the customer's one is non-active or non-existent
             order       = Order.objects.create(order_status_id=2, total_price = 0, customer=user)
         elif Order.objects.get(customer = user, order_status_id = 2):
@@ -82,7 +82,7 @@ class CartView(View):
             order.save()
             total_price = order.total_price
             return JsonResponse({"message": "ORIGINAL SANDWICH CART ADD SUCCESSFUL", "total_price": total_price, "cart": list(Cart.objects.filter(order = order).values())})
-        
+
         elif body['default_ingredients']:
             # this extracts the original product name
             product_name        = body['product_name']
