@@ -20,8 +20,8 @@ class SignUpView(View):
 
         try:
             validate_email(data['email'])
-            if len(data['password']) < 8:
-                return JsonResponse({'message': '8자리 이상 입력하세요'}, status=400)
+            if len(data['password']) < 6:
+                return JsonResponse({'message': '6자리 이상 입력하세요'}, status=400)
             if not Customer.objects.filter(email = data['email']).exists():
                 hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 Customer.objects.create(
