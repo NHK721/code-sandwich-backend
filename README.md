@@ -12,7 +12,7 @@
 ![](https://images.velog.io/images/nickanism/post/fbda5c00-10f7-4187-a2a2-b2e12b80fe0f/Subway_20200605_53_16.png)
 
 ### Postman API Documentation
-Click to view [Code-sandwich API Documenation](https://planetary-meteor-818133.postman.co/collections/4405191-21102aa0-ec86-42aa-bc0d-780a7469aadd?version=latest&workspace=025085f9-e59c-4346-81db-8976d9d65f04)
+Click to view [Code-sandwich API Documenation](https://documenter.getpostman.com/view/4405191/T1LHHV52)
 
 # Tech Stacks
 Implementation details can be found on the github links above.
