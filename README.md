@@ -1,3 +1,4 @@
+
 # Introduction
 
 - Subway website clone (https://www.subway.co.kr/)
@@ -12,7 +13,7 @@
 ![](https://images.velog.io/images/nickanism/post/fbda5c00-10f7-4187-a2a2-b2e12b80fe0f/Subway_20200605_53_16.png)
 
 ### Postman API Documentation
-Click to view [Code-sandwich API Documenation](https://documenter.getpostman.com/view/4405191/T1LHHV52)
+Click to view [Code-sandwich API Documenation](https://planetary-meteor-818133.postman.co/collections/11571511-1f8cde43-ad71-48c6-bc61-fce6ff0117b3?version=latest&workspace=025085f9-e59c-4346-81db-8976d9d65f04)
 
 # Tech Stacks
 Implementation details can be found on the github links above.

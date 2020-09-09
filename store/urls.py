@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import StoreView, OpenView, DetailView, SearchView
+from .views import (
+    StoreView, 
+    OpenView, 
+    DetailView, 
+    SearchView
+)
 
 urlpatterns = [
         path('/main', StoreView.as_view()),
